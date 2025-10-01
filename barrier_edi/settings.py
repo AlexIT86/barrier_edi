@@ -158,4 +158,9 @@ LOGIN_URL = "/"
 LOGIN_REDIRECT_URL = "/orders/"
 LOGOUT_REDIRECT_URL = "/"
 
+# CSRF trusted origins (pentru deploy)
+CSRF_TRUSTED_ORIGINS = [
+    "https://barrier-edi.dot-net.app",
+]
+
 

@@ -1,0 +1,29 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-6 col-lg-5">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="h5 mb-3">Autentificare Staff</h1>
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Utilizator</label>
+            <input class="form-control" name="username" value="{{ username|default:'' }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Parolă</label>
+            <input class="form-control" type="password" name="password" required>
+          </div>
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" type="submit">Login</button>
+            <a class="btn btn-link" href="{% url 'core:staff_reset' %}">Resetare parolă</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

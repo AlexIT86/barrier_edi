@@ -1,0 +1,84 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Comenzi</h1>
+  <div class="d-flex align-items-center gap-2">
+    {% if request.user.is_authenticated and request.user.is_staff %}
+    <a class="btn btn-primary" href="{% url 'orders:order_create' %}">Adaugă comandă</a>
+    {% endif %}
+    <form class="d-flex" method="get">
+    <input class="form-control me-2" type="search" name="partner" placeholder="Caută partener" value="{{ request.GET.partner }}">
+    <select class="form-select me-2" name="status">
+      <option value="">Status</option>
+      <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>În așteptare</option>
+      <option value="sent_to_partner" {% if request.GET.status == 'sent_to_partner' %}selected{% endif %}>Trimisă către partener</option>
+      <option value="in_delivery" {% if request.GET.status == 'in_delivery' %}selected{% endif %}>În livrare</option>
+      <option value="delivered" {% if request.GET.status == 'delivered' %}selected{% endif %}>Livrată</option>
+      <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Anulată</option>
+    </select>
+    <button class="btn btn-primary" type="submit">Filtrează</button>
+    </form>
+  </div>
+  </div>
+
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Nr. comandă</th>
+                <th>Partener</th>
+                <th>Data</th>
+                <th>Valoare</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in orders %}
+              <tr>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.partner.name }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>{{ order.total_value }} {{ order.currency }}</td>
+                <td><span class="badge text-bg-secondary">{{ order.get_status_display }}</span></td>
+                <td class="text-end">
+                  <a class="btn btn-sm btn-outline-primary" href="{{ order.get_absolute_url }}">Detalii</a>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-center text-muted py-4">Nu există comenzi.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div class="small text-muted">Total: {{ stats.total_orders }} | Active: {{ stats.active_orders }} | Valoare totală: {{ stats.total_value }}</div>
+        {% if is_paginated %}
+        <nav>
+          <ul class="pagination mb-0">
+            {% if page_obj.has_previous %}
+              <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a></li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">«</span></li>
+            {% endif %}
+            <li class="page-item active"><span class="page-link">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+              <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a></li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">»</span></li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

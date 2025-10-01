@@ -1,0 +1,57 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Avize</h1>
+  <form class="d-flex" method="get">
+    <input class="form-control me-2" name="partner" placeholder="Caută partener" value="{{ request.GET.partner }}">
+    <select class="form-select me-2" name="status">
+      <option value="">Status</option>
+      <option value="draft">Draft</option>
+      <option value="submitted">Trimis</option>
+      <option value="validating">În validare</option>
+      <option value="validated">Validat</option>
+      <option value="rejected">Respins</option>
+    </select>
+    <select class="form-select me-2" name="validation_status">
+      <option value="">Status validare</option>
+      <option value="pending">Pending</option>
+      <option value="approved">Aprobat</option>
+      <option value="partial">Parțial</option>
+      <option value="rejected">Respins</option>
+    </select>
+    <button class="btn btn-primary" type="submit">Filtrează</button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead><tr><th>Nr. aviz</th><th>Comandă</th><th>Partener</th><th>Data</th><th>Status</th><th>Validare</th><th></th></tr></thead>
+        <tbody>
+        {% for d in deliveries %}
+          <tr class="{% if d.has_discrepancies %}table-danger{% endif %}">
+            <td>{{ d.delivery_number }}</td>
+            <td>{{ d.order.order_number }}</td>
+            <td>{{ d.partner.name }}</td>
+            <td>{{ d.delivery_date }}</td>
+            <td>{{ d.get_status_display }}</td>
+            <td>{{ d.get_validation_status_display }}</td>
+            <td class="text-end">
+              <a class="btn btn-sm btn-outline-primary" href="{% url 'deliveries:delivery_detail' d.pk %}">Detalii</a>
+              {% if d.status == 'submitted' %}
+              <a class="btn btn-sm btn-success" href="{% url 'deliveries:delivery_validate' d.pk %}">Validează</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="text-center text-muted py-4">Nu există avize.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

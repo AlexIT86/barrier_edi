@@ -1,0 +1,45 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h1 class="h5">Validare aviz {{ object.delivery_number }}</h1>
+    <form method="post">
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Material</th>
+              <th>Cant. comandată</th>
+              <th>Cant. livrată</th>
+              <th>Cant. acceptată</th>
+              <th>Diferență</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item, field in item_fields %}
+              <tr class="{% if item.has_discrepancy %}table-danger{% endif %}">
+                <td>{{ item.order_item.material_code }} — {{ item.order_item.material_description }}</td>
+                <td>{{ item.order_item.quantity_ordered }}</td>
+                <td>{{ item.quantity_delivered }}</td>
+                <td style="width: 180px;">{{ field }}</td>
+                <td><!-- Diferența se calculează în backend --></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="mb-3">
+        {{ form.validation_notes.label_tag }}
+        {{ form.validation_notes }}
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-success" type="submit">Validează</button>
+        <a class="btn btn-secondary" href="{{ object.get_absolute_url }}">Anulează</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+

@@ -1,0 +1,58 @@
+{% load static %}
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Barrier EDI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  </head>
+  <body>
+    {% include 'base/navbar.html' %}
+
+    <div class="content-wrapper">
+      <header class="topbar d-flex align-items-center justify-content-between px-3">
+        <button id="sidebarToggle" class="btn btn-primary btn-sm" type="button" aria-label="Toggle sidebar">☰</button>
+        <div class="ms-auto d-flex align-items-center gap-2">
+          {% if request.user.is_authenticated and request.user.is_staff %}
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">{{ request.user.username }}</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'core:staff_profile' %}">Profil</a></li>
+                <li><a class="dropdown-item" href="{% url 'core:staff_logout' %}">Logout</a></li>
+              </ul>
+            </div>
+          {% elif request.session.partner_code %}
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">{{ request.session.partner_code }}</button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'partners:profile' %}">Profil</a></li>
+                <li>
+                  <form method="post" action="/partners/logout/" class="px-3 py-1">{% csrf_token %}
+                    <button class="btn btn-link p-0">Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          {% endif %}
+        </div>
+      </header>
+
+      <main class="container-fluid py-3">
+        {% include 'includes/messages.html' %}
+        {% block content %}{% endblock %}
+      </main>
+
+      {% include 'base/footer.html' %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+  </body>
+  </html>
+
+

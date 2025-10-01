@@ -1,0 +1,88 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="h5">Creează aviz</h1>
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          {{ formset.management_form }}
+          <div class="alert alert-info">Dacă nu completezi pozițiile, vom prelua automat cantitățile rămase din comanda selectată.</div>
+          {% if order_preview_items %}
+          <div class="alert alert-secondary">
+            <div class="fw-bold mb-1">Previzualizare poziții din comandă:</div>
+            <ul class="mb-0">
+              {% for p in order_preview_items %}
+                <li>{{ p.order_item.material_code }} — {{ p.order_item.material_description }} (rămas: {{ p.remaining }})</li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead><tr><th>Poziție</th><th>Cantitate livrată</th><th>Note</th></tr></thead>
+              <tbody>
+                {% for f in formset %}
+                  <tr>
+                    <td>{{ f.order_item }}</td>
+                    <td>{{ f.quantity_delivered }}</td>
+                    <td>{{ f.notes }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Trimite aviz</button>
+            <a class="btn btn-secondary" href="{% url 'partners:order_list' %}">Renunță</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function(){
+    const orderSelect = document.getElementById('id_order');
+    const tableBody = document.querySelector('table tbody');
+    const mgmtTotal = document.getElementById('id_items-TOTAL_FORMS') || document.querySelector('input[name$="-TOTAL_FORMS"]');
+    function clearRows(){
+      const rows = Array.from(tableBody.querySelectorAll('tr'));
+      rows.forEach(r => r.remove());
+      if (mgmtTotal) mgmtTotal.value = 0;
+    }
+    function addRow(index, item){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <input type="hidden" name="items-${index}-order_item" value="${item.id}">
+          <div class="small">${item.material_code} — ${item.material_description}</div>
+        </td>
+        <td><input class="form-control form-control-sm" step="0.001" type="number" name="items-${index}-quantity_delivered" value="${item.remaining}"></td>
+        <td><textarea class="form-control" rows="1" name="items-${index}-notes"></textarea></td>`;
+      tableBody.appendChild(tr);
+    }
+    async function loadItems(orderId){
+      if (!orderId) return;
+      clearRows();
+      try{
+        const res = await fetch(`/orders/${orderId}/items-api/`, {headers: {'X-Requested-With':'XMLHttpRequest'}});
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); } catch(e) { console.error('Invalid JSON', text); return; }
+        (data.items || []).forEach((it, idx) => addRow(idx, it));
+        if (mgmtTotal) mgmtTotal.value = (data.items || []).length;
+      }catch(e){ console.error(e); }
+    }
+    if (orderSelect){
+      orderSelect.addEventListener('change', ()=> loadItems(orderSelect.value));
+      if (orderSelect.value) loadItems(orderSelect.value);
+    }
+  })();
+  </script>
+{% endblock %}
+
+

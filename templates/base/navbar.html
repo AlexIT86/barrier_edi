@@ -1,0 +1,46 @@
+<aside id="sidebar" class="sidebar">
+  <div class="sidebar-brand">
+    <a href="/" class="brand">
+      <img src="/static/images/logo.png" alt="Logo" class="brand-logo" loading="eager">
+    </a>
+  </div>
+  <nav class="sidebar-nav">
+    {% if request.user.is_authenticated and request.user.is_staff %}
+      <a class="sidebar-link {% if request.path|slice:':8' == '/orders/' %}active{% endif %}" href="/orders/">
+        <span class="icon">📄</span><span>Comenzi</span>
+      </a>
+      <a class="sidebar-link {% if request.path|slice:':12' == '/deliveries/' %}active{% endif %}" href="/deliveries/">
+        <span class="icon">🚚</span><span>Livrări</span>
+      </a>
+      <a class="sidebar-link {% if request.path|slice:':23' == '/partners/admin-page/' %}active{% endif %}" href="{% url 'partners:admin_page' %}">
+        <span class="icon">🛠</span><span>Admin Parteneri</span>
+      </a>
+      <hr>
+      <div class="sidebar-section">
+        <div class="sidebar-note">Utilizator: {{ request.user.username }}</div>
+        <a class="sidebar-link" href="/admin/">⚙️ Admin</a>
+      </div>
+    {% elif request.session.partner_code %}
+      <a class="sidebar-link {% if request.path|slice:':19' == '/partners/dashboard/' %}active{% endif %}" href="{% url 'partners:dashboard' %}">
+        <span class="icon">🏠</span><span>Dashboard</span>
+      </a>
+      <a class="sidebar-link {% if request.path|slice:':16' == '/partners/orders/' %}active{% endif %}" href="{% url 'partners:order_list' %}">
+        <span class="icon">📦</span><span>Comenzile mele</span>
+      </a>
+      <a class="sidebar-link {% if request.path|slice:':16' == '/partners/profile/' %}active{% endif %}" href="{% url 'partners:profile' %}">
+        <span class="icon">👤</span><span>Profil</span>
+      </a>
+      <hr>
+      <div class="sidebar-section">
+        <div class="sidebar-note">Partner: {{ request.session.partner_code }}</div>
+        <form method="post" action="/partners/logout/">{% csrf_token %}
+          <button class="btn btn-sm btn-outline-dark w-100" type="submit">Logout</button>
+        </form>
+      </div>
+    {% else %}
+      {# Fără meniuri înainte de login #}
+    {% endif %}
+  </nav>
+</aside>
+
+

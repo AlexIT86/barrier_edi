@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="h4">Bun venit, {{ partner.name }}</h1>
+        <p class="text-muted">Statistici rapide:</p>
+        <div class="row g-3">
+          <div class="col-md-4"><div class="p-3 bg-light border rounded">Comenzi active: <strong>{{ stats.active_orders }}</strong></div></div>
+          <div class="col-md-4"><div class="p-3 bg-light border rounded">Total comenzi: <strong>{{ stats.total_orders }}</strong></div></div>
+          <div class="col-md-4"><div class="p-3 bg-light border rounded">Livrări în așteptare: <strong>{{ stats.pending_deliveries }}</strong></div></div>
+        </div>
+      </div>
+      <div class="card-body border-top">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 mb-0">Comenzi recente</h2>
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'partners:order_list' %}">Vezi toate</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped">
+            <thead><tr><th>Nr.</th><th>Data</th><th>Valoare</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            {% for order in active_orders %}
+              <tr>
+                <td>{{ order.order_number }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>{{ order.total_value }} {{ order.currency }}</td>
+                <td>{{ order.get_status_display }}</td>
+                <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{% url 'partners:order_detail' order.pk %}">Detalii</a></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="5" class="text-muted text-center">Nu există comenzi.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

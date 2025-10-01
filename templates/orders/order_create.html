@@ -1,0 +1,44 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="h5">Adaugă comandă manual</h1>
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          {{ formset.management_form }}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead><tr><th>Poz.</th><th>Material</th><th>Descriere</th><th>Cant.</th><th>U.M.</th><th>Livrare</th><th>Preț</th><th>Unit. preț</th><th>Unit. preț cmd</th></tr></thead>
+              <tbody>
+              {% for f in formset %}
+                <tr>
+                  <td style="width:80px;">{{ f.position }}</td>
+                  <td>{{ f.material_code }}</td>
+                  <td>{{ f.material_description }}</td>
+                  <td style="width:140px;">{{ f.quantity_ordered }}</td>
+                  <td style="width:120px;">{{ f.unit_of_measure }}</td>
+                  <td style="width:160px;">{{ f.delivery_date }}</td>
+                  <td style="width:140px;">{{ f.net_price }}</td>
+                  <td style="width:120px;">{{ f.price_unit }}</td>
+                  <td style="width:140px;">{{ f.price_unit_order }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Salvează</button>
+            <a class="btn btn-secondary" href="{% url 'orders:order_list' %}">Renunță</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

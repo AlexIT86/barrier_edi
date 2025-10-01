@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h1 class="h5">Comanda {{ order.order_number }}</h1>
+        <p class="text-muted mb-1">Data: {{ order.order_date }} | Livrare: {{ order.delivery_date }}</p>
+        <p class="text-muted">Valoare: {{ order.total_value }} {{ order.currency }} | Status: {{ order.get_status_display }}</p>
+        <a class="btn btn-success btn-sm" href="{% url 'deliveries:delivery_create' %}">Creează aviz</a>
+      </div>
+      <div class="card-body border-top">
+        <h2 class="h6">Poziții</h2>
+        <div class="table-responsive">
+          <table class="table table-sm table-striped">
+            <thead><tr><th>Poz.</th><th>Material</th><th>Descriere</th><th>Cant.</th><th>U.M.</th><th>Preț</th><th>Livrat</th></tr></thead>
+            <tbody>
+            {% for item in order.items.all %}
+              <tr>
+                <td>{{ item.position }}</td>
+                <td>{{ item.material_code }}</td>
+                <td>{{ item.material_description }}</td>
+                <td>{{ item.quantity_ordered }}</td>
+                <td>{{ item.unit_of_measure }}</td>
+                <td>{{ item.net_price }}</td>
+                <td>{{ item.quantity_delivered }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+

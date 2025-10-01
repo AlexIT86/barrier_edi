@@ -1,0 +1,60 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">Comenzile mele</h1>
+  <form class="d-flex" method="get">
+    <select class="form-select me-2" name="status">
+      <option value="">Status</option>
+      <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>În așteptare</option>
+      <option value="sent_to_partner" {% if request.GET.status == 'sent_to_partner' %}selected{% endif %}>Trimisă către partener</option>
+      <option value="in_delivery" {% if request.GET.status == 'in_delivery' %}selected{% endif %}>În livrare</option>
+      <option value="delivered" {% if request.GET.status == 'delivered' %}selected{% endif %}>Livrată</option>
+      <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>Anulată</option>
+    </select>
+    <button class="btn btn-primary" type="submit">Filtrează</button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead><tr><th>Nr.</th><th>Data</th><th>Valoare</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.order_date }}</td>
+            <td>{{ order.total_value }} {{ order.currency }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td class="text-end">
+              <div class="btn-group btn-group-sm">
+                <a class="btn btn-outline-primary" href="{% url 'partners:order_detail' order.pk %}">Detalii</a>
+                <a class="btn btn-outline-success" href="{% url 'deliveries:delivery_create' %}">Creează aviz</a>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">Nu există comenzi.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if is_paginated %}
+  <div class="card-footer d-flex justify-content-center">
+    <ul class="pagination mb-0">
+      {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a></li>
+      {% endif %}
+      <li class="page-item active"><span class="page-link">{{ page_obj.number }}/{{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a></li>
+      {% endif %}
+    </ul>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+

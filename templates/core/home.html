@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card">
+      <div class="card-body">
+        <ul class="nav nav-tabs" id="loginTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">Utilizator intern</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="partner-tab" data-bs-toggle="tab" data-bs-target="#partner" type="button" role="tab">Partener</button>
+          </li>
+        </ul>
+        <div class="tab-content pt-3">
+          <div class="tab-pane fade show active" id="staff" role="tabpanel">
+            <form method="post" action="{% url 'core:staff_login' %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label">Utilizator</label>
+                <input class="form-control" name="username" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Parolă</label>
+                <input class="form-control" type="password" name="password" required>
+              </div>
+              <div class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit">Login staff</button>
+                <a class="btn btn-link" href="{% url 'core:staff_reset' %}">Resetare parolă</a>
+              </div>
+            </form>
+          </div>
+          <div class="tab-pane fade" id="partner" role="tabpanel">
+            <form method="post" action="{% url 'partners:login' %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label class="form-label">Cod partener</label>
+                <input class="form-control" name="partner_code" required>
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-outline-primary" type="submit">Autentificare partener</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
